@@ -40,7 +40,7 @@ const SwitchList = ({ setSelectedSwitch, setOpen }) => {
 
   
   const handleMarket = () => {
-    setSelectedSwitch('C - Network');
+    setSelectedSwitch('Private Network');
     navigate('/marketplace');
     setOpen(false);
   };
@@ -95,7 +95,7 @@ const SwitchList = ({ setSelectedSwitch, setOpen }) => {
 
       <ListItemWrapper>
         <ListItem alignItems="center" onClick={handleMarket}>
-          <ListItemText primary="C-Network" />
+          <ListItemText primary="Private Network" />
         </ListItem>
       </ListItemWrapper>
       <Divider />
@@ -112,7 +112,7 @@ const SwitchList = ({ setSelectedSwitch, setOpen }) => {
           alignItems="center"
           onClick={handleAcademy}
         >
-          <ListItemText primary="P-Network" />
+          <ListItemText primary="Public Network" />
         </ListItem>
       </ListItemWrapper>
       <Divider />

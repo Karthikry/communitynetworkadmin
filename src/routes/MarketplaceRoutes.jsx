@@ -11,12 +11,13 @@ import ProtectedRoute from './ProtectedRoute';
 const DashboardDefault = Loadable(lazy(() => import('views/marketplace')));
 // utilities routing
 
-const UtilsSettings = Loadable(lazy(() => import('views/utilitiess/marketutilities/Settings')));
-const UtilsAdvertise = Loadable(lazy(() => import('views/utilitiess/marketutilities/Advertise')));
+
 const UtilsFamily = Loadable(lazy(() => import('views/utilitiess/marketutilities/membership/Family')));
 const UtilsBulk = Loadable(lazy(() => import('views/utilitiess/marketutilities/membership/Bulk_Upload')));
 const UtilsFamily_Tree = Loadable(lazy(() => import('views/utilitiess/marketutilities/membership/Family_Tree')));
 const UtilsRequest = Loadable(lazy(() => import('views/utilitiess/marketutilities/Request')));
+const UtilsFamilyTree = Loadable(lazy(() => import('views/utilitiess/marketutilities/membership/FamilyTree')));
+
 
 const UtilsQualification = Loadable(lazy(() => import('views/utilitiess/marketutilities/masters/Qualification')));
 const UtilsOccupation = Loadable(lazy(() => import('views/utilitiess/marketutilities/masters/Occupation')));
@@ -26,8 +27,14 @@ const UtilsEventType = Loadable(lazy(() => import('views/utilitiess/marketutilit
 const UtilsNewsType = Loadable(lazy(() => import('views/utilitiess/marketutilities/masters/NewsType')));
 const UtilsPromoType = Loadable(lazy(() => import('views/utilitiess/marketutilities/masters/PromoType')));
 const UtilsRequestType = Loadable(lazy(() => import('views/utilitiess/marketutilities/masters/RequestType')));
+const UtilsCity = Loadable(lazy(() => import('views/utilitiess/marketutilities/masters/City')));
+const UtilsState = Loadable(lazy(() => import('views/utilitiess/marketutilities/masters/State')));
+const UtilsCountry = Loadable(lazy(() => import('views/utilitiess/marketutilities/masters/Country')));
 
-const UtilsReport = Loadable(lazy(() => import('views/utilitiess/marketutilities/Report')));
+
+const UtilsMembershipReport = Loadable(lazy(() => import('views/utilitiess/marketutilities/reports/MemberShipReport')));
+const UtilsPaymentReport = Loadable(lazy(() => import('views/utilitiess/marketutilities/reports/PaymentReport')));
+
 
 const UtilsStaff = Loadable(lazy(() => import('views/utilitiess/marketutilities/users/Staff')));
 const UtilsMembers = Loadable(lazy(() => import('views/utilitiess/marketutilities/users/Members')));
@@ -54,6 +61,9 @@ const MarketplaceRoutes = {
             { path: 'membership/family', element: <UtilsFamily /> },
             { path: 'membership/bulkupload', element: <UtilsBulk /> },
             { path: 'membership/familytree', element: <UtilsFamily_Tree /> },
+            { path: 'membership/familytrees', element: <UtilsFamilyTree /> },
+
+
 
             { path: 'requests', element: <UtilsRequest /> },
 
@@ -65,9 +75,15 @@ const MarketplaceRoutes = {
             { path: 'masters/newtype', element: <UtilsNewsType /> },
             { path: 'masters/promotype', element: <UtilsPromoType /> },
             { path: 'masters/requesttype', element: <UtilsRequestType /> },
+            { path: 'masters/city', element: <UtilsCity /> },
+            { path: 'masters/state', element: <UtilsState /> },
+            { path: 'masters/country', element: <UtilsCountry /> },
 
 
-            { path: 'reports', element: <UtilsReport /> },
+
+            { path: 'membersreports', element: <UtilsMembershipReport /> },
+            { path: 'paymentreports', element: <UtilsPaymentReport /> },
+
 
             { path: 'users/staff', element: <UtilsStaff /> },
             { path: 'users/members', element: <UtilsMembers /> },

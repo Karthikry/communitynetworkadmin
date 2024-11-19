@@ -73,7 +73,7 @@ import {
         id: 'payments',
         title: 'Payments',
         type: 'item',
-        url: '/marketplace/payments',
+        url: '/marketplace',
         icon: icons.IconCurrencyRupee,
         breadcrumbs: false
       },
@@ -112,27 +112,27 @@ import {
             url: '/marketplace/masters/gotra',
             breadcrumbs: false
           },
-          {
-            id: 'eventtype',
-            title: 'Event Type',
-            type: 'item',
-            url: '/marketplace/masters/eventtype',
-            breadcrumbs: false
-          },
-          {
-            id: 'newtype',
-            title: 'New Type',
-            type: 'item',
-            url: '/marketplace/masters/newtype',
-            breadcrumbs: false
-          },
-          {
-            id: 'promotype',
-            title: 'Promo Type',
-            type: 'item',
-            url: '/marketplace/masters/promotype',
-            breadcrumbs: false
-          },
+          // {
+          //   id: 'eventtype',
+          //   title: 'Event Type',
+          //   type: 'item',
+          //   url: '/marketplace/masters/eventtype',
+          //   breadcrumbs: false
+          // },
+          // {
+          //   id: 'newtype',
+          //   title: 'New Type',
+          //   type: 'item',
+          //   url: '/marketplace/masters/newtype',
+          //   breadcrumbs: false
+          // },
+          // {
+          //   id: 'promotype',
+          //   title: 'Promo Type',
+          //   type: 'item',
+          //   url: '/marketplace/masters/promotype',
+          //   breadcrumbs: false
+          // },
           {
             id: 'requesttype',
             title: 'Request Type',
@@ -140,15 +140,51 @@ import {
             url: '/marketplace/masters/requesttype',
             breadcrumbs: false
           },
+          {
+            id: 'city',
+            title: 'City',
+            type: 'item',
+            url: '/marketplace/masters/city',
+            breadcrumbs: false
+          },
+          {
+            id: 'state',
+            title: 'State',
+            type: 'item',
+            url: '/marketplace/masters/state',
+            breadcrumbs: false
+          },
+          {
+            id: 'country',
+            title: 'Country',
+            type: 'item',
+            url: '/marketplace/masters/country',
+            breadcrumbs: false
+          },
         ]
       },
       {
         id: 'reports',
         title: 'Reports',
-        type: 'item',
-        url: '/marketplace/reports',
+        type: 'collapse',
+        url: null,
         icon: icons.IconPaperBag,
-        breadcrumbs: false
+        children: [
+          {
+            id: 'membershipreports',
+            title: 'Membership Reports',
+            type: 'item',
+            url: '/marketplace/membersreports',
+            breadcrumbs: false
+          },
+          {
+            id: 'paymentreports',
+            title: 'Payment Reports',
+            type: 'item',
+            url: '/marketplace/paymentreports',
+            breadcrumbs: false
+          }
+        ]
       },
       {
         id: 'users',
@@ -178,7 +214,7 @@ import {
         id: 'settings',
         title: 'Settings',
         type: 'item',
-        url: '/marketplace/settings',
+        url: '/marketplace/',
         icon: icons.IconSettings,
         breadcrumbs: false
       }

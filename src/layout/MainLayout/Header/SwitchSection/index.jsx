@@ -41,7 +41,7 @@ const SwitchSection = () => {
     } else if (path.includes('/upSkills')) {
       setSelectedSwitch('Upskills');
     }else if (path.includes('/marketplace')) {
-      setSelectedSwitch('C - Network');
+      setSelectedSwitch('Private Network');
     }
   }, [location]);
 

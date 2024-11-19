@@ -128,58 +128,85 @@ const Banner = () => {
   const postData = async (e) => {
     e.preventDefault();
     const formErrors = validateForm();
-
+  
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
-    } else {
-      try {
-        // Upload the file if one is selected
-        if (selectedFile) {
-          await onFileUpload(e);
-        }
-
-        if (editMode) {
-          const updatedData = {
-            ...userdata,
-            advertisementId,
-            updatedBy: { userId: user.userId }
-          };
-          await updatedAdvertise(updatedData, headers); // Update banner
-        } else {
-          await addBanner(userdata, headers); // Add new banner
-        }
-        setUserData({ advertisementName: '', description: '', fileName: '' });
-        inputRef.current.value = null;
-        setRefreshTrigger((prev) => !prev);
-        setOpen(false);
-      } catch (error) {
-        console.error('Error saving advertisement:', error);
+      return;
+    }
+  
+    try {
+      // File upload logic
+      if (selectedFile && !editMode) {
+        const data = new FormData();
+        data.append('file', selectedFile);
+  
+        const uploadRes = await axios.post(
+          'https://executivetracking.cloudjiffy.net/Mahaasabha/file/uploadFile',
+          data,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+  
+        const uploadedFileName = uploadRes.data.fileName;
+        setFileName(uploadedFileName);
+        userdata.fileName = uploadedFileName; // Set fileName in the form data
       }
+  
+      if (editMode) {
+        const updatedData = {
+          ...userdata,
+          advertisementId,
+          updatedBy: { userId: user.userId },
+        };
+        await updatedAdvertise(updatedData, headers);
+      } else {
+        await addBanner(userdata, headers);
+      }
+  
+      setUserData({ advertisementName: '', description: '', fileName: '' });
+      setSelectedFile(null); // Clear file selection
+      inputRef.current.value = null; // Reset file input
+      setRefreshTrigger((prev) => !prev); // Refresh the table
+      setOpen(false);
+    } catch (error) {
+      console.error('Error saving advertisement:', error);
     }
   };
+  
+
 
   const onFileChange = (e) => {
-    setFileName(e.target.files[0].name);
-    setSelectedFile(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      setFileName(file.name);
+      setSelectedFile(file);
+      setFileError(''); // Clear any previous errors
+    }
   };
+  
 
   const validateForm = () => {
     const newErrors = {};
-
+  
     if (!userdata.advertisementName || userdata.advertisementName.trim() === '') {
       newErrors.advertisementName = 'Enter the Advertisement name';
     }
-
+  
     if (!userdata.description || userdata.description.trim() === '') {
       newErrors.description = 'Enter the description';
     }
-
-    if (!fileName) {
-      newErrors.fileName = 'Select and upload a file first';
+  
+    if (!fileName && !editMode) {
+      newErrors.fileName = 'Please upload a file';
     }
-
+  
     return newErrors;
   };
+  
 
   const changeHandler = (e) => {
     setUserData({
@@ -302,44 +329,75 @@ const Banner = () => {
         />
       </Paper>
 
-      {/* Dialog for adding/editing advertisement */}
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
-        <form onSubmit={postData}>
-          <DialogTitle>{editMode ? 'Update Advertisement' : 'Add Advertisement'}</DialogTitle>
-          <Box sx={{ p: 2 }}>
-            <TextField
-              margin="normal"
-              fullWidth
-              label="Advertisement Name"
-              name="advertisementName"
-              value={userdata.advertisementName}
-              onChange={changeHandler}
-              error={!!errors.advertisementName}
-              helperText={errors.advertisementName}
-            />
-            <TextField
-              margin="normal"
-              fullWidth
-              label="Description"
-              name="description"
-              value={userdata.description}
-              onChange={changeHandler}
-              error={!!errors.description}
-              helperText={errors.description}
-            />
-            <Button variant="contained" component="label">
-              Upload File
-              <input type="file" hidden onChange={onFileChange} ref={inputRef} />
-            </Button>
-            {fileError && <span style={{ color: 'red' }}>{fileError}</span>}
-            {fileName && <span>Selected File: {fileName}</span>}
-          </Box>
-          <DialogActions>
-            <Button onClick={() => setOpen(false)}>Cancel</Button>
-            <Button type="submit">{editMode ? 'Update' : 'Submit'}</Button>
-          </DialogActions>
-        </form>
-      </Dialog>
+      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="md">
+  <DialogTitle sx={{ fontSize: '16px' }}>
+    {editMode ? 'Edit Advertisement' : 'Add Advertisement'}
+  </DialogTitle>
+  <Box component="form" onSubmit={postData} noValidate sx={{ p: 3 }}>
+    <Grid container spacing={2}>
+      {/* Advertisement Name Field */}
+      <Grid item xs={12}>
+        <TextField
+          fullWidth
+          label="Advertisement Name"
+          name="advertisementName"
+          value={userdata.advertisementName}
+          onChange={changeHandler}
+          error={!!errors.advertisementName}
+          helperText={errors.advertisementName}
+        />
+      </Grid>
+      {/* Description Field */}
+      <Grid item xs={12}>
+        <TextField
+          fullWidth
+          label="Description"
+          name="description"
+          value={userdata.description}
+          onChange={changeHandler}
+          error={!!errors.description}
+          helperText={errors.description}
+          multiline
+          rows={3}
+        />
+      </Grid>
+      {/* File Name and Upload Field */}
+      <Grid item xs={12}>
+        <TextField
+          margin="normal"
+          fullWidth
+          id="fileName"
+          label="File Name"
+          name="fileName"
+          autoComplete="fileName"
+          value={fileName}
+          disabled
+          helperText={fileError || 'Please upload a valid file'}
+          error={!!fileError}
+          InputProps={{
+            endAdornment: (
+              <Button variant="contained" color="primary" onClick={onFileUpload}>
+                Upload
+              </Button>
+            )
+          }}
+        />
+        <input type="file" onChange={onFileChange} ref={inputRef} style={{ marginTop: 20 }} />
+      </Grid>
+    </Grid>
+    {/* Dialog Actions */}
+    <DialogActions>
+      <Button onClick={() => setOpen(false)}>Cancel</Button>
+      <Button type="submit" variant="contained" color="primary">
+        Save
+      </Button>
+    </DialogActions>
+  </Box>
+</Dialog>
+
+
+
+      
     </MainCard>
   );
 };

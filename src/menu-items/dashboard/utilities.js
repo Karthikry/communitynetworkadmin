@@ -69,6 +69,36 @@ const utilities = {
         }
       ]
     },
+    {
+      id: 'masters',
+      title: 'Masters',
+      type: 'collapse',
+      icon: icons.IconPalette,
+      url: null,
+      children: [
+        {
+          id: 'eventtype',
+          title: 'Event Type',
+          type: 'item',
+          url: '/dashboard/masters/eventtype',
+          breadcrumbs: false
+        },
+        {
+          id: 'newstype',
+          title: 'News Type',
+          type: 'item',
+          url: '/dashboard/masters/newstype',
+          breadcrumbs: false
+        },
+        {
+          id: 'promotype',
+          title: 'Promo Type',
+          type: 'item',
+          url: '/dashboard/masters/promotype',
+          breadcrumbs: false
+        },
+      ]
+    },
 
 
     // {
