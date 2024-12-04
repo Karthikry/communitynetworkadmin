@@ -66,6 +66,13 @@ const utilities = {
           type: 'item',
           url: '/dashboard/success-story',
           breadcrumbs: false
+        },
+        {
+          id: 'event',
+          title: 'Event',
+          type: 'item',
+          url: '/dashboard/event',
+          breadcrumbs: false
         }
       ]
     },

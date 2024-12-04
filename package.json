@@ -59,6 +59,7 @@
     "react-to-print": "^2.15.1",
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0",
+    "styled-components": "^6.1.13",
     "sweetalert2": "^11.12.4",
     "swr": "^2.2.5",
     "vite": "^5.2.10",

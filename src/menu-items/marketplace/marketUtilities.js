@@ -64,18 +64,41 @@ import {
       {
         id: 'requests',
         title: 'Requests',
-        type: 'item',
-        url: '/marketplace/requests',
+        type: 'collapse',
+        url: null,
         icon: icons.IconShadow,
-        breadcrumbs: false
+        children: [
+          {
+            id: 'membershiprequest',
+            title: 'Membership request', 
+            type: 'item',
+            url: '/marketplace/requests',
+            breadcrumbs: false
+          },
+        ]
       },
       {
         id: 'payments',
         title: 'Payments',
-        type: 'item',
-        url: '/marketplace',
+        type: 'collapse',
+        url: null,
         icon: icons.IconCurrencyRupee,
-        breadcrumbs: false
+        children: [
+          {
+            id: 'subcription',
+            title: 'Subscriptions', 
+            type: 'item',
+            url: '/marketplace/payments/subscription',
+            breadcrumbs: false
+          },
+          {
+            id: 'payment',
+            title: 'Payments',
+            type: 'item',
+            url: '/marketplace/payments/all_payment',
+            breadcrumbs: false
+          },
+        ]
       },
       {
         id: 'masters',
@@ -171,19 +194,12 @@ import {
         icon: icons.IconPaperBag,
         children: [
           {
-            id: 'membershipreports',
-            title: 'Membership Reports',
+            id: 'report',
+            title: 'Report',
             type: 'item',
             url: '/marketplace/membersreports',
             breadcrumbs: false
           },
-          {
-            id: 'paymentreports',
-            title: 'Payment Reports',
-            type: 'item',
-            url: '/marketplace/paymentreports',
-            breadcrumbs: false
-          }
         ]
       },
       {

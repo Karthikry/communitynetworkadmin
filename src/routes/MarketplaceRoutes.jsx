@@ -14,9 +14,16 @@ const DashboardDefault = Loadable(lazy(() => import('views/marketplace')));
 
 const UtilsFamily = Loadable(lazy(() => import('views/utilitiess/marketutilities/membership/Family')));
 const UtilsBulk = Loadable(lazy(() => import('views/utilitiess/marketutilities/membership/Bulk_Upload')));
-const UtilsFamily_Tree = Loadable(lazy(() => import('views/utilitiess/marketutilities/membership/Family_Tree')));
+const UtilsFamily_Tree = Loadable(lazy(() => import('views/utilitiess/marketutilities/membership/familytree/FamilyTree')));
 const UtilsRequest = Loadable(lazy(() => import('views/utilitiess/marketutilities/Request')));
+
 const UtilsFamilyTree = Loadable(lazy(() => import('views/utilitiess/marketutilities/membership/FamilyTree')));
+
+
+
+const UtilsSubscriptionPayment = Loadable(lazy(() => import('views/utilitiess/marketutilities/payments/SubscriptionPayments')));
+const UtilsAllPayment = Loadable(lazy(() => import('views/utilitiess/marketutilities/payments/AllPayments')));
+
 
 
 const UtilsQualification = Loadable(lazy(() => import('views/utilitiess/marketutilities/masters/Qualification')));
@@ -65,7 +72,14 @@ const MarketplaceRoutes = {
 
 
 
+
+
             { path: 'requests', element: <UtilsRequest /> },
+
+            { path: 'payments/subscription', element: <UtilsSubscriptionPayment /> },
+            { path: 'payments/all_payment', element: <UtilsAllPayment /> },
+
+
 
             { path: 'masters/qualification', element: <UtilsQualification /> },
             { path: 'masters/occupation', element: <UtilsOccupation /> },

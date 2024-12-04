@@ -16,6 +16,8 @@ const UtilsBanner = Loadable(lazy(() => import('views/utilitiess/dashboard/Banne
 const UtilsPromo = Loadable(lazy(() => import('views/utilitiess/dashboard/Promo')));
 const UtilsNews = Loadable(lazy(() => import('views/utilitiess/dashboard/News')));
 const UtilsSuccessStory = Loadable(lazy(() => import('views/utilitiess/dashboard/SuccessStory')));
+const UtilsEvent = Loadable(lazy(() => import('views/utilitiess/dashboard/Event')));
+
 
 const UtilsEventType = Loadable(lazy(() => import('views/utilitiess/marketutilities/masters/EventType')));
 const UtilsNewsType = Loadable(lazy(() => import('views/utilitiess/marketutilities/masters/NewsType')));
@@ -49,6 +51,8 @@ const MainRoutes = {
             { path: 'news', element: <UtilsNews /> },
             { path: 'promo', element: <UtilsPromo /> },
             { path: 'success-story', element: <UtilsSuccessStory /> },
+            { path: 'event', element: <UtilsEvent /> },
+
 
             { path: 'masters/eventtype', element: <UtilsEventType /> },
             { path: 'masters/newstype', element: <UtilsNewsType /> },

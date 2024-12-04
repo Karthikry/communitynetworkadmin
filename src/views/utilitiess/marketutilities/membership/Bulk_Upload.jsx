@@ -6,6 +6,7 @@ import {
 import MainCard from 'ui-component/cards/MainCard';
 import { gridSpacing } from 'store/constant';
 import { format } from 'date-fns';
+import { IconPlus } from '@tabler/icons-react';
 
 const columns = [
   { id: 'membershipId', label: 'ID', minWidth: 120 },
@@ -162,8 +163,8 @@ const Bulk_Upload = () => {
       await fetchFamilyData(); 
       setOpen(false);
       setSelectedFile(null);
-      setUploadMessage('Data has been successfully updated!');
-      window.alert('Data has been successfully updated!');
+      setUploadMessage('File Uploaded successfully!');
+      window.alert('File Uploaded successfully!');
     } catch (error) {
       console.error('Failed to upload file:', error);
     }
@@ -190,7 +191,8 @@ const Bulk_Upload = () => {
         <DialogTitle>Upload file</DialogTitle>
         <DialogContent>
           <Button variant="contained" component="label">
-            Upload
+           <IconPlus />
+             Browse File
             <input type="file" hidden onChange={handleFileChange} />
           </Button>
           {selectedFile ? <span>{selectedFile.name}</span> : <span>No file selected</span>}

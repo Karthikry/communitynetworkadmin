@@ -1,1 +1,0 @@
-import{d as t,i as r,j as a}from"./index-Djsfy_Oq.js";var e={},u=r;Object.defineProperty(e,"__esModule",{value:!0});var o=e.default=void 0,p=u(t()),v=a;o=e.default=(0,p.default)((0,v.jsx)("path",{d:"M19 9h-4V3H9v6H5l7 7zM5 18v2h14v-2z"}),"GetApp");export{o as d};

@@ -1,208 +1,258 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Card, CardContent, Typography, Box, CircularProgress } from '@mui/material';
-import { Tree, TreeNode } from 'react-organizational-chart';
-import maleImage from '../../../../assets/images/Male-removebg-preview.png'; // Update with your image path
-import femaleImage from '../../../../assets/images/Female-removebg-preview.png';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Tree, TreeNode } from "react-organizational-chart";
+import { Box, CircularProgress, CssBaseline, Typography, IconButton } from "@mui/material";
+import { ManOutlined, Woman2Outlined } from "@mui/icons-material";
+import axios from "axios";
 
-// Helper component for each family member's card
-const FamilyMemberCard = ({ member }) => (
-  <Card style={{
-    backgroundColor: member.isAlive ? '#90EE90' : '#ee6b6e',
-    margin: '10px',
-    minWidth: '150px',
-    textAlign: 'center',
-  }}>
-    <CardContent style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'white' }}>
-      <img
-        src={member.gender === "MALE" ? maleImage : femaleImage}
-        alt={member.gender === "MALE" ? 'Male' : 'Female'}
-        style={{ width: 30, height: 30, marginBottom: '5px' }}
-      />
-      <Typography variant="body1" style={{ fontWeight: 'bold' }}>
-        {member.fullName}
-      </Typography>
-      <Typography variant="body2">
-        {member.relationship}
-      </Typography>
-    </CardContent>
-  </Card>
-);
-
-const FamilyTree = () => {
-  const [familyData, setFamilyData] = useState(null);
+const FatherFamilyTree = () => {
+  const [open, setOpen] = useState(false);
+  const [familyTreeData, setFamilyTreeData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
+
+  // Directly provide the membership code
+  const membershipCode = "1A";
+
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchFamilyTree = async () => {
       try {
-        const user = JSON.parse(sessionStorage.getItem('user'));
-        const accessToken = user?.accessToken || '';
 
+        // Retrieve the user token from session storage
+  const user = JSON.parse(sessionStorage.getItem('user'));
+  const accessToken = user?.accessToken || '';
+
+  const headers = {
+    'Content-type': 'application/json',
+    Authorization: `Bearer ${accessToken}`
+  };
         const response = await axios.get(
-          'https://executivetracking.cloudjiffy.net/Mahaasabha/membership/v1/findRootFamilyTreeByMembershipCode/1A',
-          {
-            headers: {
-              'Authorization': `Bearer ${accessToken}`,
-              'Content-Type': 'application/json',
-            },
-          }
+          `https://executivetracking.cloudjiffy.net/Mahaasabha/membership/v1/findRootFamilyTreeByMembershipCode/${membershipCode}`,
+          { headers }
         );
-        setFamilyData(response.data);
+        setFamilyTreeData(response.data);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching family tree data:", error);
+        setError("Error fetching family tree data.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
-  }, []);
+    fetchFamilyTree();
+  }, [membershipCode]);
 
-  if (loading) return <CircularProgress />;
-  if (!familyData) return <Typography>No data available</Typography>;
+  const renderFamilyTree = (data) => {
+    if (!data) return null;
 
-  const renderFamilyTree = (member) => (
-    <TreeNode label={<FamilyMemberCard member={member} />}>
-      {/* Render Spouses */}
-      {member.spouseMemberships && member.spouseMemberships.map((spouse, index) => (
-        <TreeNode key={`spouse-${index}`} label={<FamilyMemberCard member={spouse} />} />
-      ))}
-      
-      {/* Render Children */}
-      {member.childrenMemberships && member.childrenMemberships.map((child, index) => (
-        <TreeNode key={`child-${index}`} label={<FamilyMemberCard member={child} />}>
-          {renderFamilyTree(child)}
+    const renderTreeNodes = (node) => {
+      if (!node) return null;
+
+      // Icon and background color based on gender and isAlive
+      const genderIcon = node.gender === "MALE" ? <ManOutlined color="primary" /> : <Woman2Outlined sx={{ color: "pink" }} />;
+      const backgroundColor = node.isAlive ? "lightgreen" : "lightcoral";
+
+      // Render spouses and children
+      const spouseNodes = (node.spouseMemberships || []).map((spouse) => (
+        <TreeNode
+          key={spouse.membershipId}
+          label={
+            <Box
+              sx={{
+                padding: 1,
+                borderRadius: 1,
+                border: "1px solid #ccc",
+                backgroundColor,
+                display: "inline-block",
+                marginLeft: 2,
+              }}
+            >
+              {genderIcon}
+              <Typography variant="body2" component="span">
+                {spouse.fullName}
+              </Typography>
+            </Box>
+          }
+        />
+      ));
+
+      const childNodes = (node.childrenMemberships || []).map((child) => renderTreeNodes(child));
+
+      return (
+        <TreeNode
+          key={node.membershipId}
+          label={
+            <Box
+              sx={{
+                padding: 1,
+                borderRadius: 1,
+                border: "1px solid #ccc",
+                backgroundColor,
+                display: "inline-block",
+                textAlign: "center",
+              }}
+            >
+              {genderIcon}
+              <Typography variant="body1">{node.fullName}</Typography>
+            </Box>
+          }
+        >
+          {spouseNodes}
+          {childNodes}
         </TreeNode>
-      ))}
-    </TreeNode>
-  );
+      );
+    };
+
+    return (
+      <Tree lineWidth="2px" lineColor="green" lineBorderRadius="10px">
+        {renderTreeNodes(data)}
+      </Tree>
+    );
+  };
+
+  const goToDashboard = () => {
+    navigate("/viewfamily", {
+      state: {
+        rowData: { membershipCode },
+        familyTreeData,
+        searchInput: "",
+        gender: familyTreeData?.[0]?.gender || "FEMALE",
+        isMarried: familyTreeData?.[0]?.isMarried || false,
+      },
+    });
+  };
 
   return (
-    <Box textAlign="center" m={2}>
-      {/* Render the main family tree */}
-      <Tree
-        lineWidth="2px"
-        lineColor="green"
-        lineBorderRadius="10px"
-        label={<FamilyMemberCard member={familyData} />}
+    <Box sx={{ display: "flex", flexDirection: "column" }}>
+      <CssBaseline />
+   
+      <Box
+        component="section"
+        sx={{
+          flexGrow: 1,
+          transition: "margin-left 225ms cubic-bezier(0.4, 0, 0.6, 1) 0ms",
+          marginLeft: open ? "200px" : "0",
+          p: 3,
+        }}
       >
-        {renderFamilyTree(familyData)}
-      </Tree>
+        <IconButton onClick={goToDashboard}>
+          <Typography variant="body1">Back to Dashboard</Typography>
+        </IconButton>
+        <Box sx={{ textAlign: "center", mt: 4 }}>
+          {loading && <CircularProgress />}
+          {error && <Typography color="error">{error}</Typography>}
+          {!loading && !error && familyTreeData && familyTreeData.length > 0 ? (
+            renderFamilyTree(familyTreeData[0])
+          ) : (
+            <Typography>No data found</Typography>
+          )}
+        </Box>
+      </Box>
     </Box>
   );
 };
 
-export default FamilyTree;
+export default FatherFamilyTree;
 
 
+// import React, { useState, useEffect } from "react";
+// import { Tree, TreeNode } from "react-organizational-chart";
+// import { Box, CircularProgress, Typography } from "@mui/material";
+// import { ManOutlined, Woman2Outlined } from "@mui/icons-material";
+// import axios from "axios";
 
-
-
-// import React, { useEffect, useState } from 'react';
-// import axios from 'axios';
-// import { Card, CardContent, Typography, Box, CircularProgress } from '@mui/material';
-// import { Tree, TreeNode } from 'react-organizational-chart';
-// import maleImage from '../../../../assets/images/Male-removebg-preview.png';  // Update with your image path
-// import femaleImage from '../../../../assets/images/Female-removebg-preview.png';
-
-// // Helper component for each family member's card
-// const FamilyMemberCard = ({ member }) => (
-//   <Card style={{
-//     backgroundColor: member.isAlive ? '#90EE90' : '#ee6b6e',
-//     margin: '10px',
-//     minWidth: '150px',
-//     textAlign: 'center',
-//   }}>
-//     <CardContent style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'white' }}>
-//       <img
-//         src={member.gender === "MALE" ? maleImage : femaleImage}
-//         alt={member.gender === "MALE" ? 'Male' : 'Female'}
-//         style={{ width: 30, height: 30, marginBottom: '5px' }}
-//       />
-//       <Typography variant="body1" style={{ fontWeight: 'bold' }}>
-//         {member.fullName}
-//       </Typography>
-//       <Typography variant="body2">
-//         {member.relationship} {/* Add relationship status such as "Son", "Daughter" */}
-//       </Typography>
-//     </CardContent>
-//   </Card>
-// );
-
-// const FamilyTree = () => {
-//   const [familyData, setFamilyData] = useState(null);
+// const FatherFamilyTree = ({ membershipCode }) => {
+//   const [familyTreeData, setFamilyTreeData] = useState(null);
 //   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
 
 //   useEffect(() => {
-//     const fetchData = async () => {
+//     const fetchFamilyTree = async () => {
 //       try {
-//         const user = JSON.parse(sessionStorage.getItem('user'));
-//         const accessToken = user?.accessToken || '';
+
+//         const user = JSON.parse(sessionStorage.getItem("user"));
+//         const accessToken = user?.accessToken || "";
+//         const headers = {
+//           "Content-type": "application/json",
+//           Authorization: `Bearer ${accessToken}`,
+//         };
 
 //         const response = await axios.get(
-//           'https://executivetracking.cloudjiffy.net/Mahaasabha/membership/v1/findRootFamilyTreeByMembershipCode/1A',
-//           {
-//             headers: {
-//               'Authorization': `Bearer ${accessToken}`,
-//               'Content-Type': 'application/json',
-//             },
-//           }
+//           `https://executivetracking.cloudjiffy.net/Mahaasabha/membership/v1/findFatherRootFamilyTreeByMembershipCode/${membershipCode}`,
+//           { headers }
 //         );
-//         setFamilyData(response.data);
+//         setFamilyTreeData(response.data);
 //       } catch (error) {
-//         console.error('Error fetching data:', error);
+//         if (error.response?.status === 404) {
+//           console.error("No data found for the provided membership code:", membershipCode);
+//           setError("No family tree data found.");
+//         } else {
+//           console.error("Error fetching family tree data:", error);
+//           setError("An unexpected error occurred. Please try again later.");
+//         }
 //       } finally {
 //         setLoading(false);
 //       }
+      
 //     };
 
-//     fetchData();
-//   }, []);
+//     fetchFamilyTree();
+//   }, [membershipCode]);
 
-//   if (loading) return <CircularProgress />;
-//   if (!familyData) return <Typography>No data available</Typography>;
+//   const renderFamilyTree = (data) => {
+//     if (!data) return null;
 
-//   const renderFamilyTree = (member) => (
-//     // <TreeNode label={<FamilyMemberCard member={member} />}>
-//       {/* Spouse */}
-//       {member.spouseDto && member.spouseDto.map((spouse, index) => (
-//         <TreeNode key={`spouse-${index}`} label={<FamilyMemberCard member={spouse} />} />
-//       ))}
-      
-//       {/* Children */}
-//       {member.childrenDto && member.childrenDto.map((child, index) => (
-//         <TreeNode key={`child-${index}`} label={<FamilyMemberCard member={child} />}>
-//           {/* Child's Spouse */}
-//           {child.spouseDto && child.spouseDto.map((childSpouse, spouseIndex) => (
-//             <TreeNode key={`child-spouse-${spouseIndex}`} label={<FamilyMemberCard member={childSpouse} />} />
-//           ))}
-//           {/* Grandchildren */}
-//           {child.childrenDto && child.childrenDto.map((grandChild, grandChildIndex) => (
-//             <TreeNode key={`grandchild-${grandChildIndex}`} label={<FamilyMemberCard member={grandChild} />} />
-//           ))}
+//     const renderTreeNodes = (node) => {
+//       if (!node) return null;
+
+//       const genderIcon = node.gender === "MALE" ? <ManOutlined color="primary" /> : <Woman2Outlined sx={{ color: "pink" }} />;
+//       const backgroundColor = node.isAlive ? "lightgreen" : "lightcoral";
+
+//       return (
+//         <TreeNode
+//           key={node.membershipId}
+//           label={
+//             <Box
+//               sx={{
+//                 padding: 1,
+//                 borderRadius: 1,
+//                 border: "1px solid #ccc",
+//                 backgroundColor,
+//                 display: "inline-block",
+//                 textAlign: "center",
+//               }}
+//             >
+//               {genderIcon}
+//               <Typography variant="body1">{node.fullName}</Typography>
+//             </Box>
+//           }
+//         >
+//           {(node.childrenMemberships || []).map((child) => renderTreeNodes(child))}
 //         </TreeNode>
-//       ))}
-//     // </TreeNode>
-//   );
+//       );
+//     };
+
+//     return (
+//       <Tree lineWidth="2px" lineColor="green" lineBorderRadius="10px">
+//         {renderTreeNodes(data)}
+//       </Tree>
+//     );
+//   };
 
 //   return (
-//     <Box textAlign="center" m={2}>
-//       {/* Render the main family tree */}
-//       <Tree
-//         lineWidth="2px"
-//         lineColor="green"
-//         lineBorderRadius="10px"
-//         label={<FamilyMemberCard member={familyData} />}
-//       >
-//         {renderFamilyTree(familyData)}
-//       </Tree>
+//     <Box sx={{ textAlign: "center", mt: 4 }}>
+//       {loading && <CircularProgress />}
+//       {error && <Typography color="error">{error}</Typography>}
+//       {!loading && !error && familyTreeData ? (
+//         renderFamilyTree(familyTreeData[0])
+//       ) : (
+//         <Typography>No data found</Typography>
+//       )}
 //     </Box>
 //   );
 // };
 
-// export default FamilyTree;
-
-
-
-
+// export default FatherFamilyTree;

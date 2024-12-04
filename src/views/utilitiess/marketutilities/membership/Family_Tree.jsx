@@ -29,8 +29,11 @@ const FamilyTree = () => {
   const [error, setError] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [openFamilyTreeDialog, setOpenFamilyTreeDialog] = useState(false);
+  const [openRootFamilyTreeDialog, setOpenRootFamilyTreeDialog] = useState(false);
   const [selectedMemberDetails, setSelectedMemberDetails] = useState(null);
   const [selectedFamilyTree, setSelectedFamilyTree] = useState(null);
+  const [selectedRootFamilyTree, setSelectedRootFamilyTree] = useState(null);
+
   const [loading, setLoading] = useState(false);
 
   const FamilyMemberCard = ({ member }) => (
@@ -41,6 +44,8 @@ const FamilyTree = () => {
         minWidth: '120px',
       }}
     >
+      {console.log(member)}
+
       <CardContent style={{ display: 'flex', alignItems: 'center' }}>
         <img
           src={member.gender === 'MALE' ? maleImage : femaleImage}
@@ -97,6 +102,32 @@ const FamilyTree = () => {
     }
     setLoading(false);
   };
+
+
+  const fetchRootFamilyTreeData = async (membershipCode) => {
+    console.log(membershipCode);
+    setLoading(true);
+    try {
+      const user = JSON.parse(sessionStorage.getItem('user'));
+      const accessToken = user?.accessToken || '';
+
+      const response = await axios.get(
+        `https://executivetracking.cloudjiffy.net/Mahaasabha/membership/v1/findRootFamilyTreeByMembershipCode/${membershipCode}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      setSelectedRootFamilyTree(response.data);
+      console.log(response.data)
+      setOpenRootFamilyTreeDialog(true);
+    } catch (err) {
+      setError('Failed to fetch family tree data');
+    }
+    setLoading(false);
+  };
+
 
   const fetchMemberDetails = async (membershipCode) => {
     setLoading(true);
@@ -156,6 +187,59 @@ const FamilyTree = () => {
     </div>
   );
 
+  const renderRootFamilyTree = (member) => (
+    <div>
+      {console.log(member)}
+      <TreeNode label={<FamilyMemberCard member={member} />}>
+        {/* Parents */}
+        {member.parentMemberships && member.parentMemberships.length > 0 && (
+          <TreeNode label={<Typography variant="body1" color="primary">Parents</Typography>}>
+            {member.parentMemberships.map((parent, index) => (
+              <TreeNode
+                key={`parent-${index}`}
+                label={<FamilyMemberCard member={parent} />}
+              />
+            ))}
+          </TreeNode>
+        )}
+  
+        {/* Spouse */}
+        {member.spouseMemberships && member.spouseMemberships.length > 0 && (
+          <TreeNode label={<Typography variant="body1" color="primary">Spouse</Typography>}>
+            {member.spouseMemberships.map((spouse, index) => (
+              <TreeNode
+                key={`spouse-${index}`}
+                label={<FamilyMemberCard member={spouse} />}
+              />
+            ))}
+          </TreeNode>
+        )}
+  
+        {/* Children */}
+        {member.childrenMemberships && member.childrenMemberships.length > 0 && (
+          <TreeNode label={<Typography variant="body1" color="primary">Children</Typography>}>
+            {member.childrenMemberships.map((child) => renderRootFamilyTree(child))}
+          </TreeNode>
+        )}
+  
+        {/* Siblings */}
+        {member.siblingMemberships && member.siblingMemberships.length > 0 && (
+          <TreeNode label={<Typography variant="body1" color="primary">Siblings</Typography>}>
+            {member.siblingMemberships.map((sibling, index) => (
+              <TreeNode
+                key={`sibling-${index}`}
+                label={<FamilyMemberCard member={sibling} />}
+              />
+            ))}
+          </TreeNode>
+        )}
+      </TreeNode>
+    </div>
+  );
+  
+
+
+
   const handleSearch = (event) => {
     event.preventDefault();
     if (searchQuery.trim()) {
@@ -206,6 +290,9 @@ const FamilyTree = () => {
             <Typography variant="body1">
               <strong>Age:</strong> {member.age}
             </Typography>
+            <Typography variant="body1">
+              <strong>Gotra:</strong> {member.gothra}
+            </Typography>
 
             <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: '15px' }}>
               <Button
@@ -229,7 +316,7 @@ const FamilyTree = () => {
               {member.gender == "MALE"  ? <Button
                 variant="contained"
                 style={{ backgroundColor: 'white', color: 'blue', border: '1px solid blue' }}
-                onClick={() => fetchFamilyTreeData(member.membershipCode)}
+                onClick={() => fetchRootFamilyTreeData(member.membershipCode)}
               >Root Family Tree</Button>:""}
 
 
@@ -321,6 +408,22 @@ const FamilyTree = () => {
               // label={<FamilyMemberCard member={selectedFamilyTree} />}
             >
               {renderFamilyTree(selectedFamilyTree)}
+            </Tree>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={openRootFamilyTreeDialog} onClose={() => setOpenRootFamilyTreeDialog(false)} maxWidth="lg" fullWidth>
+        <DialogTitle> Root Family Tree</DialogTitle>
+        <DialogContent>
+          {selectedRootFamilyTree && (
+            <Tree
+              lineWidth={'2px'}
+              lineColor={'blue'}
+              lineBorderRadius={'10px'}
+              label={<FamilyMemberCard member={selectedRootFamilyTree} />}
+            >
+              {renderRootFamilyTree(selectedRootFamilyTree)}
             </Tree>
           )}
         </DialogContent>

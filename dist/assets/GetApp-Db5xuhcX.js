@@ -1,0 +1,1 @@
+import{v as t,w as r,j as a}from"./index-BCMjTDj-.js";var e={},u=r;Object.defineProperty(e,"__esModule",{value:!0});var v=e.default=void 0,o=u(t()),p=a;v=e.default=(0,o.default)((0,p.jsx)("path",{d:"M19 9h-4V3H9v6H5l7 7zM5 18v2h14v-2z"}),"GetApp");export{v as d};
